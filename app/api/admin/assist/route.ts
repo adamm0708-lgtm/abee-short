@@ -26,18 +26,21 @@ export async function POST(req:Request){
       "Tautan sumber untuk atribusi saja, bukan untuk dibaca: "+sourceUrl,
       "FAKTA TERKONFIRMASI DARI REDAKSI:\n"+facts
     ].join("\n\n");
-    const response=await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key="+encodeURIComponent(apiKey),{
+    const response=await fetch("https://generativelanguage.googleapis.com/v1beta/interactions",{
       method:"POST",
-      headers:{"Content-Type":"application/json"},
+      headers:{"Content-Type":"application/json",
+        "x-goog-api-key":apiKey
+      },
       body:JSON.stringify({
-        contents:[{parts:[{text:prompt}]}],
-        generationConfig:{temperature:0.2,responseMimeType:"application/json"}
+        model:"gemini-3.8-flash",
+        input:prompt,
+        store:false
       }),
       signal:AbortSignal.timeout(45000)
     });
     const payload=await response.json();
     if(!response.ok) throw new Error(payload?.error?.message||"Gemini API gagal memproses permintaan.");
-    const text=payload?.candidates?.[0]?.content?.parts?.map((p:any)=>p.text||"").join("");
+    const text=payload?.steps?.filter((step:any)=>step.type==="model_output").flatMap((step:any)=>step.content||[]).filter((part:any)=>part.type==="text").map((part:any)=>part.text||"").join("");
     if(!text) throw new Error("Gemini tidak mengembalikan draf. Periksa kuota atau konfigurasi model.");
     const draft=JSON.parse(text);
     if(!draft.title||!draft.body) throw new Error("Hasil AI tidak memiliki judul atau isi artikel.");
