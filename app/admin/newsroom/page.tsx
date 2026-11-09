@@ -39,7 +39,7 @@ export default function Newsroom(){
       const raw=await r.text();
       let d:any={};
       try{d=raw?JSON.parse(raw):{};}catch{d={error:raw||"Respons server tidak valid."};}
-      if(!r.ok){setMsg(d.error||d.message||\`Gagal. Server merespons \${r.status}.\`);return;}
+      if(!r.ok){setMsg(d.error||d.message||("Gagal. Server merespons " + r.status + "."));return;}
       setMsg(d.message||"Berhasil.");
       await load();
     }catch(e){
