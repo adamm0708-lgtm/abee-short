@@ -9,12 +9,12 @@ export async function db(path: string, init: RequestInit = {}) {
   if (!base || !key) throw new Error("Supabase belum dikonfigurasi.");
   const headers = new Headers(init.headers);
   headers.set("apikey", key);
-  headers.set("Authorization", \`Bearer \${key}\`);
+  headers.set("Authorization", "Bearer " + key);
   headers.set("Content-Type", "application/json");
   const cleanPath = path.replace(/^\/+/, "");
   let response: Response;
   try {
-    response = await fetch(\`\${base}/rest/v1/\${cleanPath}\`, {
+    response = await fetch(base + "/rest/v1/" + cleanPath, {
       ...init,
       headers,
       cache: "no-store",
@@ -28,7 +28,7 @@ export async function db(path: string, init: RequestInit = {}) {
   }
   const body = await response.text();
   if (!response.ok) {
-    throw new Error(body || \`Supabase error \${response.status}\`);
+    throw new Error(body || "Supabase error " + response.status);
   }
   return body ? JSON.parse(body) : null;
 }
