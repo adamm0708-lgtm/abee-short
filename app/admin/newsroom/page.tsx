@@ -1,7 +1,7 @@
 "use client";
 import {useState} from "react";
 
-type Item={id:number;title:string;source_name:string;source_url:string;excerpt:string};
+type Item={id:number;source_id:number;title:string;source_name:string;source_url:string;excerpt:string};
 type Article={id:number;title:string;slug:string;status:string;region:string;category:string};
 
 export default function Newsroom(){
@@ -39,7 +39,7 @@ export default function Newsroom(){
       const raw=await r.text();
       let d:any={};
       try{d=raw?JSON.parse(raw):{};}catch{d={error:raw||"Respons server tidak valid."};}
-      if(!r.ok){setMsg(d.error||d.message||`Gagal. Server merespons ${r.status}.`);return;}
+      if(!r.ok){setMsg(d.error||d.message||\`Gagal. Server merespons \${r.status}.\`);return;}
       setMsg(d.message||"Berhasil.");
       await load();
     }catch(e){
@@ -84,7 +84,11 @@ export default function Newsroom(){
         </section>
       </div>
       <section className="mt-5 rounded-2xl bg-white p-5 shadow-sm"><h2 className="text-xl font-bold">Inbox RSS ({items.length})</h2>
-        {items.map(i=><div key={i.id} className="flex flex-wrap items-center justify-between gap-3 border-b py-4"><div><b>{i.title}</b><p className="text-sm text-slate-500">{i.source_name} · <a className="underline" href={i.source_url} target="_blank" rel="noreferrer">Buka sumber</a></p></div><button type="button" disabled={!!busy} className="rounded-lg border px-3 py-2 disabled:opacity-50" onClick={()=>post("/api/admin/generate",{id:i.id},"generate")}>Buat draf AI</button></div>)}
+        {items.map(i=>{
+          const permission=sources.find(s=>String(s.id)===String(i.source_id))?.usage_permission||"link_only";
+          const allowed=["licensed","press_release"].includes(permission);
+          return <div key={i.id} className="flex flex-wrap items-center justify-between gap-3 border-b py-4"><div><b>{i.title}</b><p className="text-sm text-slate-500">{i.source_name} · <a className="underline" href={i.source_url} target="_blank" rel="noreferrer">Buka sumber</a></p></div>{allowed?<button type="button" disabled={!!busy} className="rounded-lg border px-3 py-2 disabled:opacity-50" onClick={()=>post("/api/admin/generate",{id:i.id},"generate")}>Buat draf AI</button>:<span className="rounded-lg bg-slate-100 px-3 py-2 text-xs text-slate-500">Referensi saja · AI nonaktif</span>}</div>;
+        })}
       </section>
       <section className="mt-5 rounded-2xl bg-white p-5 shadow-sm"><h2 className="text-xl font-bold">Tulis artikel manual</h2>
         {(["title","excerpt","body","image_url","image_credit","source_name","source_url"] as const).map(k=><textarea key={k} className="mt-2 w-full rounded-lg border p-3" rows={k==="body"?7:2} placeholder={k} value={draft[k]} onChange={e=>setDraft({...draft,[k]:e.target.value})}/>)}
