@@ -38,7 +38,7 @@ export default function Home() {
   const favoriteFilms=films.filter(f=>favorites.includes(f.id));
   const recentFilms=history.map(id=>films.find(f=>f.id===id)).filter((f):f is Film=>Boolean(f));
   return <main className="home-page">
-    <nav className="top-nav wrap"><a className="brand" href="/">ABEE<span>SHORTS</span></a><div className="nav-right"><a href="#katalog">Jelajahi</a><a href="#favorit">Favorit ({favorites.length})</a><a className="admin-link" href="/admin">ADMIN ↗</a></div></nav>
+    <nav className="top-nav wrap"><a className="brand" href="/">ABEE<span>SHORTS</span></a><div className="nav-right"><a href="#katalog">Jelajahi</a><a href="#favorit">Favorit ({favorites.length})</a><a href="/akun">Akun</a><a className="admin-link" href="/admin">ADMIN ↗</a></div></nav>
     {featured?<section className="feature-hero">
       {featured.poster_url&&<div className="feature-backdrop" style={{backgroundImage:`url("${featured.poster_url}")`}}/>}<div className="feature-shade"/>
       <div className="feature-content wrap"><div className="feature-copy"><p className="eyebrow">ABEE SHORTS · PILIHAN CERITA</p><span className="feature-kicker">FEATURED FILM</span><h1>{featured.title}</h1><p className="feature-description">{featured.description||"Temukan cerita pilihan di ABEE SHORTS."}</p><div className="feature-tags"><span>{featured.genre}</span><span>{featured.country}</span>{featured.year&&<span>{featured.year}</span>}</div><a className="watch-cta" href={`/watch?id=${featured.id}`} onClick={()=>remember(featured.id)}>▶ &nbsp; Tonton sekarang</a></div>
