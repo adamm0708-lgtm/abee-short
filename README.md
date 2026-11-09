@@ -1,42 +1,36 @@
-# ABEE SHORTS
+# ABEE SHORTS v2
 
-Starter web app katalog film pendek dengan Next.js. Versi awal mengambil metadata dari Internet Archive dan menampilkan item yang metadata lisensinya cocok dengan daftar lisensi terbuka yang dikenali.
+Versi ini mengganti katalog otomatis Internet Archive dengan katalog film yang dimasukkan dan dikurasi admin. Database menggunakan Supabase. Pemutar mendukung YouTube embed resmi dan MP4 yang memang memiliki lisensi/izin tayang.
 
-## Jalankan di komputer
+## A. Buat database Supabase
+1. Buat akun/proyek di https://supabase.com/
+2. Buka SQL Editor.
+3. Jalankan seluruh isi file `supabase-schema.sql`.
 
-1. Install Node.js versi LTS dari https://nodejs.org/
-2. Buka terminal di folder proyek.
-3. Jalankan `npm install`
-4. Jalankan `npm run dev`
-5. Buka http://localhost:3000
+## B. Siapkan Environment Variables
+Di Supabase buka Project Settings > API. Salin:
+- Project URL → `SUPABASE_URL`
+- `service_role` key (jangan pernah dibagikan) → `SUPABASE_SERVICE_ROLE_KEY`
 
-## Deploy ke Vercel
+Buat password admin panjang sendiri → `ABEE_ADMIN_PASSWORD`.
 
-1. Upload isi folder proyek ke repository GitHub.
-2. Masuk ke https://vercel.com/ lalu pilih Add New → Project.
-3. Import repository `abee-short`.
-4. Framework akan terdeteksi sebagai Next.js. Klik Deploy.
+Tambahkan ketiga nilai tersebut di Vercel:
+Project → Settings → Environment Variables.
+Pilih Production, Preview, Development, lalu Save.
+Kemudian lakukan Redeploy.
 
-Tidak perlu API key untuk prototipe ini.
+## C. Admin
+Buka `https://DOMAIN-KAMU/admin`, masukkan `ABEE_ADMIN_PASSWORD`.
+Tambahkan film. Film baru berstatus `pending`.
+Periksa sumber dan hak tayang terlebih dahulu, lalu klik Setujui.
+Hanya film berstatus approved yang tampil di halaman publik.
 
-## Sumber katalog
+## D. Aturan hak tayang
+- YouTube: masukkan URL video dari kanal resmi yang memang mengizinkan embedding. Jangan mengunduh atau mengunggah ulang.
+- MP4: hanya gunakan file yang dibuat sendiri atau ada izin tertulis/lisensi yang mengizinkan penggunaan di website. Periksa juga hak musik, gambar, pemeran, dan wilayah distribusi.
+- Jangan menyetujui film hanya karena dapat diputar atau tombol embed tersedia.
+- Catat bukti izin, pemegang hak, wilayah, masa berlaku, dan apakah penggunaan komersial diizinkan.
 
-Katalog awal menggunakan Internet Archive Advanced Search dan metadata item:
-- https://archive.org/advancedsearch.php
-- https://archive.org/metadata/
-
-## PENTING: hak cipta dan lisensi
-
-Filter lisensi di kode ini hanya pemeriksaan otomatis awal, bukan verifikasi hukum dan bukan jaminan bahwa video boleh di-host ulang, disiarkan, atau dimonetisasi. Metadata dapat tidak lengkap atau keliru. Sebelum menayangkan atau memonetisasi setiap film, buka halaman sumber aslinya dan periksa:
-- lisensi spesifik pada item dan versi karya;
-- kewajiban atribusi dan ketentuan ShareAlike/NonCommercial/NoDerivatives;
-- hak musik, pemeran, gambar, merek, dan materi pihak ketiga;
-- apakah pengunduhan, embedding, distribusi ulang, dan monetisasi diizinkan.
-
-Versi awal ini menautkan ke sumber asli untuk item tanpa MP4 yang cocok. Jangan menghapus atribusi atau menganggap seluruh katalog otomatis aman untuk monetisasi.
-
-## Catatan prototipe
-
-- Katalog di-cache sekitar satu jam.
-- Belum ada akun pengguna, daftar favorit, admin panel, database, atau monetisasi.
-- Pengelompokan kategori masih heuristik berdasarkan subject dari Internet Archive.
+## Keamanan
+Service role key hanya digunakan pada API server dan tidak boleh diberi awalan NEXT_PUBLIC. Admin menggunakan password server-side. Gunakan password kuat dan jangan membagikannya.
+Untuk produksi dengan banyak admin, ganti password bersama ini dengan Supabase Auth dan role admin.

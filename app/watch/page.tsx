@@ -1,40 +1,44 @@
 import Link from "next/link";
 
-type Props = { searchParams: { id?: string } };
+type Film = { id:number; title:string; description:string; genre:string; country:string; year:number|null; video_type:"youtube"|"mp4"; video_url:string; source_url:string; rights_note:string; };
 
-async function getFilm(id: string) {
-  const res = await fetch(`https://archive.org/metadata/${encodeURIComponent(id)}`, { next: { revalidate: 3600 } });
+async function getFilm(id: string): Promise<Film | null> {
+  const url = process.env.SUPABASE_URL;
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!url || !key) return null;
+  const res = await fetch(`${url}/rest/v1/films?select=*&id=eq.${encodeURIComponent(id)}&status=eq.approved&limit=1`, {
+    headers: { apikey: key, Authorization: `Bearer ${key}` }, cache: "no-store"
+  });
   if (!res.ok) return null;
-  const data = await res.json();
-  const md = data.metadata || {};
-  const rawLicense = String(md.licenseurl || md.license || "");
-  const files = data.files || [];
-  const video = files.find((f: { name?: string }) => /\.mp4$/i.test(f.name || "") && !/sample|trailer|preview/i.test(f.name || ""));
-  if (!video || !/creativecommons\.org|publicdomain/i.test(rawLicense)) return null;
-  return {
-    title: String(md.title || id),
-    creator: String(md.creator || "Tidak diketahui"),
-    license: rawLicense,
-    source: `https://archive.org/details/${encodeURIComponent(id)}`,
-    video: `https://archive.org/download/${encodeURIComponent(id)}/${encodeURIComponent(video.name)}`
-  };
+  const rows = await res.json();
+  return rows[0] || null;
 }
 
-export default async function WatchPage({ searchParams }: Props) {
-  const id = searchParams.id || "";
-  const film = id ? await getFilm(id).catch(() => null) : null;
-  return (
-    <main className="watch-page">
-      <div className="wrap">
-        <Link href="/" className="back-link">← Kembali ke ABEE SHORTS</Link>
-        {film ? <>
-          <p className="eyebrow">PEMUTAR FILM</p>
-          <h1 className="watch-title">{film.title}</h1>
-          <div className="video-shell"><video controls playsInline preload="metadata" src={film.video}>Browser Anda tidak mendukung pemutar video.</video></div>
-          <div className="watch-meta"><p>Kreator: {film.creator}</p><p>Lisensi tercatat: {film.license}</p><p><a href={film.source} target="_blank" rel="noreferrer">Buka halaman sumber asli →</a></p></div>
-          <p className="legal-note">Catatan: keberadaan label lisensi pada metadata bukan jaminan bahwa seluruh unsur film bebas dari hak pihak ketiga. Periksa halaman sumber dan ketentuan lisensi sebelum distribusi ulang atau monetisasi.</p>
-        </> : <div className="empty"><h2>Film tidak dapat diputar</h2><p>ID tidak ditemukan, tidak ada berkas MP4 yang sesuai, atau metadata lisensinya belum lolos pemeriksaan awal.</p><Link href="/" className="primary-btn">Kembali ke katalog</Link></div>}
+function youtubeEmbed(url: string) {
+  try {
+    const u = new URL(url);
+    let id = "";
+    if (u.hostname.includes("youtu.be")) id = u.pathname.slice(1);
+    else if (u.hostname.includes("youtube.com")) id = u.searchParams.get("v") || u.pathname.split("/").filter(Boolean).pop() || "";
+    return id ? `https://www.youtube-nocookie.com/embed/${encodeURIComponent(id)}` : "";
+  } catch { return ""; }
+}
+
+export default async function WatchPage({ searchParams }: {searchParams:{id?:string}}) {
+  const film = searchParams.id ? await getFilm(searchParams.id) : null;
+  const embed = film?.video_type === "youtube" ? youtubeEmbed(film.video_url) : "";
+  return <main className="watch-page"><div className="wrap">
+    <Link href="/" className="back-link">← Kembali ke ABEE SHORTS</Link>
+    {film ? <>
+      <p className="eyebrow">{film.genre} • {film.country}</p><h1 className="watch-title">{film.title}</h1>
+      <div className="video-shell">
+        {film.video_type==="youtube" && embed ?
+          <iframe src={embed} title={film.title} allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowFullScreen/> :
+          film.video_type==="mp4" ? <video controls playsInline src={film.video_url}/> : <p>URL video tidak valid.</p>}
       </div>
-    </main>
-  );
+      <p className="watch-description">{film.description}</p>
+      <p className="legal-note">Informasi hak tayang: {film.rights_note}</p>
+      <p><a className="text-link" href={film.source_url} target="_blank" rel="noreferrer">Kunjungi sumber asli ↗</a></p>
+    </> : <div className="empty"><h2>Film belum tersedia</h2><p>Film mungkin belum disetujui untuk tampil atau tautannya tidak ditemukan.</p><Link href="/" className="primary-btn">Kembali ke katalog</Link></div>}
+  </div></main>;
 }
