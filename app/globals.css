@@ -93,3 +93,28 @@ html{scroll-behavior:smooth}
 @media(max-width:950px){.home-page .movie-grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
 @media(max-width:700px){.home-page .feature-content{grid-template-columns:1fr .55fr;gap:15px}.home-page .feature-copy h1{font-size:43px}.home-page .feature-poster{height:250px}.home-page .movie-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.home-page .movie-poster{height:205px}}
 @media(max-width:520px){.home-page .wrap{width:calc(100% - 28px)}.home-page .top-nav{height:65px}.home-page .nav-right{gap:10px}.home-page .nav-right a{font-size:9px}.home-page .feature-content{min-height:420px;grid-template-columns:1fr;align-content:center}.home-page .feature-copy h1{font-size:42px}.home-page .feature-poster{position:absolute;right:-10px;top:80px;width:140px;height:200px;opacity:.32}.home-page .movie-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:18px 11px}.home-page .movie-poster{height:205px}.home-page .movie-row{grid-auto-columns:145px}.home-page .catalog-heading h2{font-size:25px}.home-page .footer-inner{align-items:flex-start;flex-direction:column;gap:10px}}
+
+/* ABEE SHORTS V4 watch experience */
+.watch-v2{min-height:100vh;background:#090b10;color:#f4f6fb}
+.watch-top{height:76px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #293140}
+.watch-brand{font:700 21px 'Space Grotesk';color:#fff;text-decoration:none;letter-spacing:-1px}.watch-brand span{color:#c6f36b}
+.watch-back{color:#b9c3d1;text-decoration:none;font-size:12px}.watch-back:hover{color:#c6f36b}
+.watch-container{padding-top:40px;padding-bottom:75px}
+.watch-heading{margin-bottom:24px}.watch-heading h1{font:700 clamp(34px,5vw,52px)/1.05 'Space Grotesk';letter-spacing:-2px;margin:8px 0}.watch-subline{font-size:12px;color:#8e99a9}
+.watch-layout{display:grid;grid-template-columns:minmax(0,1fr) 260px;gap:28px;align-items:start}
+.watch-player{width:100%;aspect-ratio:16/9;background:#000;border:1px solid #293140;border-radius:8px;overflow:hidden;box-shadow:0 20px 65px #0008}
+.watch-player iframe,.watch-player video{width:100%;height:100%;display:block;border:0;object-fit:contain}
+.watch-error{height:100%;display:grid;place-items:center;color:#aeb7c5;font-size:13px}
+.watch-description-panel{padding:24px 0;border-bottom:1px solid #293140}
+.watch-description-panel h2{font:600 20px 'Space Grotesk';margin:0 0 10px}.watch-description-panel p,.watch-rights p{font-size:13px;line-height:1.8;color:#aeb7c5}
+.watch-tags{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px}.watch-tags span{border:1px solid #303949;padding:6px 10px;border-radius:3px;color:#c5cbd5;font-size:10px}
+.watch-rights{margin-top:20px;padding:17px 18px;background:#111620;border:1px solid #293140;border-radius:6px}.watch-rights b{font-size:12px;color:#c6f36b}.watch-rights p{margin:8px 0}.watch-rights a{font-size:11px;color:#c6f36b;text-decoration:none}
+.watch-aside{position:sticky;top:24px}.watch-poster,.watch-poster-placeholder{width:100%;aspect-ratio:2/3;object-fit:cover;border:1px solid #ffffff20;border-radius:6px;background:linear-gradient(145deg,#29352d,#131923)}
+.watch-poster-placeholder{display:grid;place-content:center;text-align:center;color:#c6f36b;font:700 28px 'Space Grotesk';letter-spacing:2px}
+.watch-aside-copy{padding:15px 2px}.watch-aside-copy span{font-size:8px;letter-spacing:1.5px;color:#c6f36b}.watch-aside-copy h3{font:600 18px 'Space Grotesk';margin:8px 0}.watch-aside-copy p{font-size:11px;color:#8993a2}
+.related-section{margin-top:65px}.related-head{display:flex;align-items:end;justify-content:space-between;margin-bottom:18px}.related-head h2{font:700 25px 'Space Grotesk';margin:0}.related-head>a{font-size:11px;color:#c6f36b;text-decoration:none}
+.related-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:16px}.related-card{position:relative;display:block;text-decoration:none;color:#f4f6fb;min-width:0}.related-card img,.related-placeholder{width:100%;aspect-ratio:2/3;object-fit:cover;border-radius:5px;background:linear-gradient(145deg,#29352d,#131923)}.related-placeholder{display:grid;place-items:center;color:#c6f36b;font-weight:700}.related-card span{display:block;color:#c6f36b;font-size:9px;margin:9px 0 5px}.related-card b{font:600 13px 'Space Grotesk';white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
+.watch-not-found{padding:90px 0;text-align:center}.watch-not-found>span{font-size:10px;letter-spacing:2px;color:#c6f36b}.watch-not-found h1{font:700 35px 'Space Grotesk'}.watch-not-found p{color:#9ba4b5;font-size:13px}.watch-not-found a{display:inline-block;margin-top:15px;padding:12px 17px;background:#c6f36b;color:#11170a;text-decoration:none;border-radius:4px;font-weight:700;font-size:12px}
+.watch-footer{border-top:1px solid #293140;padding:22px 0;color:#8993a2;font-size:10px}
+@media(max-width:760px){.watch-layout{grid-template-columns:1fr}.watch-aside{position:static;display:grid;grid-template-columns:110px 1fr;gap:15px;align-items:center;grid-row:1}.watch-poster,.watch-poster-placeholder{width:110px}.related-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:520px){.watch-top{height:65px}.watch-brand{font-size:17px}.watch-back{font-size:10px}.watch-container{padding-top:27px}.watch-heading h1{font-size:34px}.watch-aside{grid-template-columns:82px 1fr}.watch-poster,.watch-poster-placeholder{width:82px}.related-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}.related-head h2{font-size:21px}}
