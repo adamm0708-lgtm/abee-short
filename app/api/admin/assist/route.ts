@@ -1,4 +1,6 @@
 import {NextResponse} from "next/server";
+
+export const maxDuration = 60;
 import {db,isAdmin} from "@/lib/db";
 
 export async function POST(req:Request){
@@ -36,7 +38,7 @@ export async function POST(req:Request){
         input:prompt,
         store:false
       }),
-      signal:AbortSignal.timeout(45000)
+      signal:AbortSignal.timeout(55000)
     });
     const payload=await response.json();
     if(!response.ok) throw new Error(payload?.error?.message||"Gemini API gagal memproses permintaan.");
