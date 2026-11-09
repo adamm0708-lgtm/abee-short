@@ -1,4 +1,4 @@
-const base = process.env.SUPABASE_URL?.replace(/\/+$/, "");
+const base = process.env.SUPABASE_URL?.replace(/\\/+$/, "");
 const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
 export function configured() {
@@ -11,12 +11,21 @@ export async function db(path: string, init: RequestInit = {}) {
   headers.set("apikey", key);
   headers.set("Authorization", `Bearer ${key}`);
   headers.set("Content-Type", "application/json");
-  const cleanPath = path.replace(/^\/+/, "");
-  const response = await fetch(`${base}/rest/v1/${cleanPath}`, {
-    ...init,
-    headers,
-    cache: "no-store",
-  });
+  const cleanPath = path.replace(/^\\/+/, "");
+  let response: Response;
+  try {
+    response = await fetch(`${base}/rest/v1/${cleanPath}`, {
+      ...init,
+      headers,
+      cache: "no-store",
+      signal: init.signal ?? AbortSignal.timeout(15000),
+    });
+  } catch (error) {
+    if (error instanceof Error && error.name === "TimeoutError") {
+      throw new Error("Koneksi ke Supabase melewati batas 15 detik. Periksa URL dan konfigurasi database di Vercel.");
+    }
+    throw new Error("Tidak dapat terhubung ke Supabase. Periksa konfigurasi database dan koneksi server.");
+  }
   const body = await response.text();
   if (!response.ok) {
     throw new Error(body || `Supabase error ${response.status}`);
