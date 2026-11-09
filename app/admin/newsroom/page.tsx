@@ -12,6 +12,7 @@ export default function Newsroom(){
   const [items,setItems]=useState<Item[]>([]);
   const [articles,setArticles]=useState<Article[]>([]);
   const [msg,setMsg]=useState("");
+  const [facts,setFacts]=useState("");
   const [source,setSource]=useState({name:"",feed_url:"",category:"Daerah",region:"Bangil",usage_permission:"link_only"});
   const [draft,setDraft]=useState({title:"",excerpt:"",body:"",category:"Daerah",region:"Bangil",image_url:"",image_credit:"",source_name:"Redaksi ABEE NEWS",source_url:""});
   const headers={"Content-Type":"application/json","x-admin-password":pass};
@@ -89,6 +90,13 @@ export default function Newsroom(){
           const allowed=["licensed","press_release"].includes(permission);
           return <div key={i.id} className="flex flex-wrap items-center justify-between gap-3 border-b py-4"><div><b>{i.title}</b><p className="text-sm text-slate-500">{i.source_name} · <a className="underline" href={i.source_url} target="_blank" rel="noreferrer">Buka sumber</a></p></div>{allowed?<button type="button" disabled={!!busy} className="rounded-lg border px-3 py-2 disabled:opacity-50" onClick={()=>post("/api/admin/generate",{id:i.id},"generate")}>Buat draf AI</button>:<span className="rounded-lg bg-slate-100 px-3 py-2 text-xs text-slate-500">Referensi saja · AI nonaktif</span>}</div>;
         })}
+      </section>
+      <section className="mt-5 rounded-2xl border border-orange-200 bg-white p-5 shadow-sm">
+        <h2 className="text-xl font-bold">Bantuan penulisan AI · Gemini</h2>
+        <p className="mt-2 text-sm text-slate-600">Masukkan fakta yang sudah diverifikasi redaksi. AI hanya menyusun fakta ini menjadi draf baru, bukan menyalin artikel dari tautan RSS.</p>
+        <textarea className="mt-3 w-full rounded-lg border p-3" rows={7} placeholder="Tulis fakta terverifikasi: siapa, apa, kapan, di mana, bagaimana, angka, dan keterangan resmi..." value={facts} onChange={e=>setFacts(e.target.value)}/>
+        <button type="button" disabled={!!busy||facts.trim().length<80} className="mt-3 rounded-lg bg-orange-600 px-4 py-2 font-bold text-white disabled:opacity-50" onClick={()=>post("/api/admin/assist",{facts,title:draft.title,category:draft.category,region:draft.region,source_name:draft.source_name,source_url:draft.source_url},"assist")}>{busy==="assist"?"Menyusun draf...":"Buat draf dengan AI"}</button>
+        <p className="mt-2 text-xs text-slate-500">Draf otomatis masuk antrean review. Tetap wajib diperiksa dan disetujui redaksi sebelum terbit.</p>
       </section>
       <section className="mt-5 rounded-2xl bg-white p-5 shadow-sm"><h2 className="text-xl font-bold">Tulis artikel manual</h2>
         {(["title","excerpt","body","image_url","image_credit","source_name","source_url"] as const).map(k=><textarea key={k} className="mt-2 w-full rounded-lg border p-3" rows={k==="body"?7:2} placeholder={k} value={draft[k]} onChange={e=>setDraft({...draft,[k]:e.target.value})}/>)}
