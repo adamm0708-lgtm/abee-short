@@ -1,0 +1,5 @@
+import {NextResponse} from "next/server";
+import Parser from "rss-parser";
+import {db,isAdmin} from "@/lib/db";
+export const maxDuration=60;
+export async function POST(req:Request){if(!isAdmin(req))return NextResponse.json({error:"Tidak diizinkan."},{status:401});try{const parser=new Parser();const sources=await db("news_sources?select=*&active=eq.true");let added=0;for(const s of sources){try{const feed=await parser.parseURL(s.feed_url);for(const item of (feed.items||[]).slice(0,15)){if(!item.link)continue;const exists=await db("news_items?select=id&source_url=eq."+encodeURIComponent(item.link)+"&limit=1");if(exists.length)continue;await db("news_items",{method:"POST",headers:{"Prefer":"return=minimal"},body:JSON.stringify({source_id:s.id,source_name:s.name,title:item.title||"Tanpa judul",excerpt:item.contentSnippet||"",source_url:item.link,category:s.category,region:s.region,published_at:item.isoDate||item.pubDate||null,status:"new"})});added++;}}catch{}}return NextResponse.json({message:"RSS selesai diperiksa.",added});}catch{return NextResponse.json({error:"Gagal mengambil RSS."},{status:500});}}
