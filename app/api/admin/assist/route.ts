@@ -4,7 +4,7 @@ import {db,isAdmin} from "@/lib/db";
 export const maxDuration = 60;
 
 const API_URL = "https://generativelanguage.googleapis.com/v1beta/interactions";
-const MODELS = ["gemini-3.8-flash", "gemini-3.7-flash"];
+const MODELS = ["gemini-3.8-flash", "gemini-3.5-flash-lite"];
 
 type GeminiPayload = {
   error?: { message?: string };
